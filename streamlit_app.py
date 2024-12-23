@@ -17,15 +17,7 @@ st.write(
 )
 
 
-# Load the data from a CSV. We're caching this so it doesn't reload every time the app
-# reruns (e.g. if the user interacts with the widgets).
-@st.cache_data
-def load_data():
-    df = pd.read_csv("data/movies_genres_summary.csv")
-    return df
 
-
-df = load_data()
 
 col1, col2 = st.columns(2)
 
