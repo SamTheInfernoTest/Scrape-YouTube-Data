@@ -2,14 +2,17 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from youtubeScraper import getData
+
+
 # Show the page title and description.
-st.set_page_config(page_title="Movies dataset", page_icon="🎬")
-st.title("🎬 Movies dataset")
+st.set_page_config(page_title="Movies dataset", page_icon="📺")
+st.title("📺 YouTube Data Scraper")
+st.header("By Suman Saurabh")
+
 st.write(
     """
-    This app visualizes data from [The Movie Database (TMDB)](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata).
-    It shows which movie genre performed best at the box office over the years. Just 
-    click on the widgets below to explore!
+    YouTube Data Scrapper fetches and analyzes YouTube data using the YouTube Data API. It automates the extraction of video details, channel stats, and etc, providing insights into content performance and audience engagement.
     """
 )
 
@@ -24,43 +27,22 @@ def load_data():
 
 df = load_data()
 
-# Show a multiselect widget with the genres using `st.multiselect`.
-genres = st.multiselect(
-    "Genres",
-    df.genre.unique(),
-    ["Action", "Adventure", "Biography", "Comedy", "Drama", "Horror"],
-)
+col1, col2 = st.columns(2)
 
-# Show a slider widget with the years using `st.slider`.
-years = st.slider("Years", 1986, 2006, (2000, 2016))
+with col1:
+    genre = st.text_input("Enter the genre:", "Music")
+    number = st.number_input("Number of videos:", min_value=1, max_value=600, value=10, step=1)
 
-# Filter the dataframe based on the widget input and reshape it.
-df_filtered = df[(df["genre"].isin(genres)) & (df["year"].between(years[0], years[1]))]
-df_reshaped = df_filtered.pivot_table(
-    index="year", columns="genre", values="gross", aggfunc="sum", fill_value=0
-)
-df_reshaped = df_reshaped.sort_values(by="year", ascending=False)
+with col2:
+    _ = st.write("")
+    _ = st.write("")
+    get_data = st.button("Get Data", type="primary",  use_container_width=True)
 
 
-# Display the data as a table using `st.dataframe`.
-st.dataframe(
-    df_reshaped,
-    use_container_width=True,
-    column_config={"year": st.column_config.TextColumn("Year")},
-)
 
-# Display the data as an Altair chart using `st.altair_chart`.
-df_chart = pd.melt(
-    df_reshaped.reset_index(), id_vars="year", var_name="genre", value_name="gross"
-)
-chart = (
-    alt.Chart(df_chart)
-    .mark_line()
-    .encode(
-        x=alt.X("year:N", title="Year"),
-        y=alt.Y("gross:Q", title="Gross earnings ($)"),
-        color="genre:N",
-    )
-    .properties(height=320)
-)
-st.altair_chart(chart, use_container_width=True)
+if get_data:
+    with st.container():
+        st.subheader("This is gathered Data")
+        with st.spinner("## Fetching data..."):
+            df = getData(genre, number)
+        st.dataframe(df, use_container_width=True)
