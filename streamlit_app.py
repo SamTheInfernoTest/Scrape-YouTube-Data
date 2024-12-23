@@ -18,12 +18,11 @@ st.write(
 
 
 
-
 col1, col2 = st.columns(2)
 
 with col1:
     genre = st.text_input("Enter the genre:", "Music")
-    number = st.number_input("Number of videos:", min_value=1, max_value=600, value=10, step=1)
+    number = st.number_input("Number of videos:", min_value=1, max_value=500, value=10, step=1)
 
 with col2:
     _ = st.write("")
@@ -35,6 +34,7 @@ with col2:
 if get_data:
     with st.container():
         st.subheader("This is gathered Data")
-        with st.spinner("## Fetching data..."):
+        with st.spinner("## This will Take A While..."):
             df = getData(genre, number)
         st.dataframe(df, use_container_width=True)
+
